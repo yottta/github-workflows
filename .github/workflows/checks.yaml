@@ -39,9 +39,9 @@ jobs:
         run: go mod download
 
       - name: Build Project
-        if: ${{ inputs.build-pattern != '' }}
-        run: go build ${{ inputs.build-pattern }}
+        if: ${{ inputs.go-build-pattern != '' }}
+        run: go build ${{ inputs.go-build-pattern }}
 
       - name: Run Tests
-        if: ${{ inputs.test-pattern != '' }}
-        run: go test -v ${{ inputs.test-pattern }}
+        if: ${{ inputs.go-test-pattern != '' }}
+        run: go test -v ${{ inputs.go-test-pattern }}

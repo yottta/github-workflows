@@ -3,15 +3,18 @@ name: Go Build and Test
 on:
   workflow_call:
     inputs:
-      go:
-        build-pattern:
-          default: './...'
-          required: false
-          type: string
-        test-pattern:
-          default: './...'
-          required: false
-          type: string
+      go-enabled:
+        default: false
+        required: false
+        type: boolean
+      go-build-pattern:
+        default: './...'
+        required: false
+        type: string
+      go-test-pattern:
+        default: './...'
+        required: false
+        type: string
   push:
     branches:
       - main
@@ -21,7 +24,7 @@ on:
 
 jobs:
   build-and-test-go:
-    if: ${{ hashFiles('go.mod') != '' }}
+    if: ${{ inputs.go-enabled }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository

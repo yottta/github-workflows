@@ -19,7 +19,8 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  build-and-test-go:
+    if: ${{ hashFiles('go.mod') != '' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository

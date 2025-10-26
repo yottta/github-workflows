@@ -1,0 +1,74 @@
+name: Govulncheck
+
+on:
+  workflow_dispatch: { }
+  workflow_call:
+    inputs:
+      enabled:
+        description: "Flag to control if this workflow should be executed or not"
+        type: boolean
+        required: false
+        default: false
+      branch-to-scan:
+        description: "The branch to run the scan against"
+        default: 'main'
+        required: false
+        type: string
+    secrets:
+      issues_gh_token:
+        required: true
+        description: "Token required to create issues on the github repo"
+jobs:
+  govulncheck:
+    if: ${{ inputs.enabled }}
+    name: Run govulncheck
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.issues_gh_token }}
+    steps:
+      - name: Checkout branch to be scanned
+        uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493
+        with:
+          ref: ${{ inputs.branch-to-scan }}
+
+      - name: Install Go toolchain
+        uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+
+      - name: Install govulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@d1f380186385b4f64e00313f31743df8e4b89a77 # v1.1.4
+        shell: bash
+
+      - name: Run and report govulncheck findings
+        run: |
+          github_run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          repo_name="${{ github.repository }}"
+          while IFS= read -r vuln;
+          do
+            [[ -z "${vuln}" ]] && continue
+            ticket_title="${vuln} reported"
+
+            reported_issues="$(gh issue -R ${{ github.repository }} list --search "\"${ticket_title}\"" --state "all" --json url)"
+            no_of_issues="$(echo ${reported_issues} | jq -r '. | length')"
+            reported_issues="$(echo $reported_issues| jq -r '.[] | .url')"
+            [[ ${no_of_issues} -ge 1 ]] && printf "Vulnerabilties found but already reported for ${vuln} in:\n ${reported_issues}\n" && continue
+
+            echo "--> Creating issue for ${vuln} <--"
+            echo "This vulnerability might affect '${{inputs.branch-to-scan}}'" > ticket_content
+            echo "" >> ticket_content
+            echo "*Vulnerability info:* https://pkg.go.dev/vuln/${vuln}" >> ticket_content
+            echo "*Pipeline run:* ${github_run_url}" >> ticket_content
+            echo "Create issue..."
+            echo "Title: ${ticket_title}"
+            echo "Content:"
+            cat ticket_content
+          
+            gh issue create --repo ${repo_name} --label "govulncheck" --title "${ticket_title}" --body-file ticket_content
+            rm ticket_content 
+          done <<< `govulncheck -format json ./...  | jq -r '.finding | select(.trace | length > 1) | .osv' | sort -u`
+          
+          echo "--> Creating issue (END) <--"
+
+        shell: bash

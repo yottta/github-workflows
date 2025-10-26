@@ -12,7 +12,7 @@ on:
       passphrase:
         description: "Passphrase for the gpg key"
         required: true
-      github_token:
+      release_github_token:
         description: "Github token required for creating the release on the repo"
         required: true
 
@@ -43,5 +43,5 @@ jobs:
           version: "~> v2"
           args: release --clean
         env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
+          GITHUB_TOKEN: ${{ secrets.release_github_token }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}

@@ -3,14 +3,15 @@ name: Go Build and Test
 on:
   workflow_call:
     inputs:
-      build-pattern:
-        default: './...'
-        required: false
-        type: string
-      test-pattern:
-        default: './...'
-        required: false
-        type: string
+      go:
+        build-pattern:
+          default: './...'
+          required: false
+          type: string
+        test-pattern:
+          default: './...'
+          required: false
+          type: string
   push:
     branches:
       - main

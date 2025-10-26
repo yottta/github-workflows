@@ -8,7 +8,6 @@ on:
         required: false
         type: boolean
       go-build-pattern:
-        default: './...'
         required: false
         type: string
       go-test-pattern:
@@ -40,7 +39,9 @@ jobs:
         run: go mod download
 
       - name: Build Project
-        run: go build ${{ inputs.build-pattern }}
+        if: ${{ inputs.go-build-pattern != '' }}
+        run: go build ${{ inputs.go-build-pattern }}
 
       - name: Run Tests
-        run: go test -v ${{ inputs.test-pattern }}
+        if: ${{ inputs.go-test-pattern != '' }}
+        run: go test -v ${{ inputs.go-test-pattern }}

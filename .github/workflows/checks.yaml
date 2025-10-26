@@ -5,11 +5,11 @@ on:
     inputs:
       build-pattern:
         default: './...'
-        optional: true
+        required: false
         type: string
       test-pattern:
         default: './...'
-        optional: true
+        required: false
         type: string
   push:
     branches:

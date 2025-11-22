@@ -44,4 +44,4 @@ jobs:
 
       - name: Run Tests
         if: ${{ inputs.go-test-pattern != '' }}
-        run: go test -v ${{ inputs.go-test-pattern }}
+        run: go test -race -v ${{ inputs.go-test-pattern }}

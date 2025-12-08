@@ -27,7 +27,7 @@ jobs:
       GH_TOKEN: ${{ secrets.issues_gh_token }}
     steps:
       - name: Checkout branch to be scanned
-        uses: actions/checkout@71cf2267d89c5cb81562390fa70a37fa40b1305e
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
           ref: ${{ inputs.branch-to-scan }}
 

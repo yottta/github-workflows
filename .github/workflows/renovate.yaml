@@ -15,6 +15,7 @@ on:
         description: "The repository that the workflow will run on. This needs to be of form '<org>/<repo_name>'"
         type: string
         required: true
+        default: "yottta/github-workflows"
       renovate_config_file:
         description: "The json file that provides specific configuration for the repository"
         type: string

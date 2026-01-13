@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
       - name: Set up Go
-        uses: actions/setup-go@4aaadf42668403795cdfdb15b1c4250e9fed12b9
+        uses: actions/setup-go@d73f6bcfc2b419b74f47075f8a487b40cc4680f8
         with:
           go-version-file: 'go.mod'
           cache: true

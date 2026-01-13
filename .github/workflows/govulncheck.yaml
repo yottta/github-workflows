@@ -32,7 +32,7 @@ jobs:
           ref: ${{ inputs.branch-to-scan }}
 
       - name: Install Go toolchain
-        uses: actions/setup-go@4aaadf42668403795cdfdb15b1c4250e9fed12b9
+        uses: actions/setup-go@d73f6bcfc2b419b74f47075f8a487b40cc4680f8
         with:
           go-version-file: 'go.mod'
           cache: true

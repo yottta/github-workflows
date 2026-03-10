@@ -5,6 +5,16 @@ on:
     tags:
       - "*"
   workflow_call:
+    inputs:
+      environment:
+        description: "The environment that the caller uses to store its secrets. This needs to be passed in here to have access to the secrets"
+        type: string
+        default: "default"
+      login_to_dockerhub:
+        description: "Controls if the caller needs login to dockerhub"
+        required: false
+        type: boolean
+        default: false
     secrets:
       gpg_private_key:
         description: "The GPG key to be used to sign releases"
@@ -15,11 +25,17 @@ on:
       release_github_token:
         description: "Github token required for creating the release on the repo"
         required: true
+      dockerhub_username:
+        description: "Dockerhub username that will be used to publish the docker image for the release"
+        required: false
+      dockerhub_password:
+        description: "Dockerhub password that will be used to publish the docker image for the release"
+        required: false
 
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
-    environment: default
+    environment: ${{ inputs.environment }}
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -36,6 +52,12 @@ jobs:
         uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417
         with:
           go-version-file: 'go.mod'
+      - name: Login to Docker Hub
+        if: ${{ inputs.login_to_dockerhub }}
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.dockerhub_username }}
+          password: ${{ secrets.dockerhub_password }}
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@ec59f474b9834571250b370d4735c50f8e2d1e29
         with:
